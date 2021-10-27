@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Crypt</title>
+    <!-- <script async src="./vue.js"></script>
+    <link rel="stylesheet" href="./css/reset.css"> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        .files {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .files>div {
+            border: 3px solid #000;
+            height: 300px;
+            overflow: auto;
+        }
+
+        #readdir {
+            position: absolute;
+            right: 0;
+            margin-top: 3px;
+            margin-right: 3px;
+        }
+
+        .content {
+            border-top: 3px solid #000;
+        }
+
+        .path {
+            width: 80%;
+            margin: auto;
+            display: flex;
+            flex-wrap: row wrap;
+            justify-content: space-around;
+            flex: 300px;
+        }
+
+        .path>div {
+            flex: 1;
+        }
+
+        .buttons {
+            margin: 10px;
+        }
+
+        .buttons>div {
+            padding: 10px;
+        }
+
+        .fileOp {
+            width: 80%;
+            margin: auto;
+            display: flex;
+            flex-wrap: row wrap;
+            justify-content: space-around;
+        }
+
+        .crypt {
+            width: 80%;
+            margin: auto;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .output {
+            position: relative;
+        }
+
+        #clear {
+            position: absolute;
+            right: 0;
+        }
+
+        .result {
+            height: 250px;
+            border: 3px solid #000;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="files">
+        <button id="readdir">readdir</button>
+        <div class="CA">
+            <span>./CA/</span>
+            <div class="content"></div>
+        </div>
+        <div class="Alice">
+            <span>./Alice/</span>
+            <div class="content"></div>
+        </div>
+        <div class="transfer">
+            <span>./transfer/</span>
+            <div class="content"></div>
+        </div>
+        <div class="Bob">
+            <span>./Bob/</span>
+            <div class="content"></div>
+        </div>
+    </div>
+    <div class="path">
+        <div class="old">
+            <p>floder<input type="text" class="floder"></p>
+            <p>file<input type="text" class="file"></p>
+        </div>
+        <div class="new">
+            <p>floder<input type="text" class="floder"></p>
+            <p>file<input type="text" class="file"></p>
+        </div>
+        <div class="phase">
+            <p>phase<input type="text" class="phasetext"></p>
+        </div>
+    </div>
+    <div class="buttons">
+        <div class="fileOp">
+            <button id="read">read</button>
+            <button id="write">write</button>
+            <button id="compare">compareHash</button>
+            <button id="send">send</button>
+        </div>
+        <div class="crypt">
+            <div>
+                <button id="grsa">generate-rsa</button>
+                <button id="encrypt">rsa-e</button>
+                <button id="decrypt">rsa-d</button>
+            </div>
+            <div>
+                <button id="aes-e">aes-e</button>
+                <button id="aes-d">aes-d</button>
+            </div>
+            <div>
+                <button id="sign">sign</button>
+                <button id="verify">verify</button>
+                <button id="hash">hash</button>
+            </div>
+        </div>
+    </div>
+    <div class="output">
+        <button id="clear">clear</button>
+        <div class="result"></div>
+    </div>
+    <script>
+        const button = document.getElementsByClassName('buttons')[0];
+        const contents = document.getElementsByClassName('content');
+        const readdir = document.getElementById('readdir');
+        const buttons = document.getElementById('sign');
+        const read = document.getElementById('read');
+        const compare = document.getElementById('compare');
+        const send = document.getElementById('send');
+        const grsa = document.getElementById('grsa');
+        const write = document.getElementById('write');
+        const encrypt = document.getElementById('encrypt');
+        const decrypt = document.getElementById('decrypt');
+        const aes_e = document.getElementById('aes-e');
+        const aes_d = document.getElementById('aes-d');
+        const sign = document.getElementById('sign');
+        const verify = document.getElementById('verify');
+        const hash = document.getElementById('hash');
+        const clear = document.getElementById('clear');
+        const output = document.getElementsByClassName('result')[0];
+        const [floder1, file1] = [document.querySelector('.old .floder'), document.querySelector('.old .file')];
+        const [floder2, file2] = [document.querySelector('.new .floder'), document.querySelector('.new .file')];
+        const phase = document.getElementsByClassName('phasetext')[0];
+        // let opath = floder1.value + file1.value;
+        // let npath = floder2.value + file2.value;
+
+        button.addEventListener('click', () => {
+            fetch(`http://${location.host}/readdir`)
+                .then((res) => res.text())
+                .then((data) => {
+                    const strs = JSON.parse(data);
+                    for (let i = 0; i < 4; i++) {
+                        contents[i].innerText = strs[i].join('\n');
+                    }
+                })
+        });
+
+        readdir.addEventListener('click', () => {
+            fetch(`http://${location.host}/readdir`)
+                .then((res) => res.text())
+                .then((data) => {
+                    const strs = JSON.parse(data);
+                    for (let i = 0; i < 4; i++) {
+                        contents[i].innerText = strs[i].join('\n');
+                    }
+                })
+        });
+
+        read.addEventListener('click', () => {
+            fetch(`http://${location.host}/read?path=${floder1.value.trim() + file1.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `${data}  ${new Date().toLocaleString()}\n`;
+                })
+        })
+        write.addEventListener('click', () => {
+            fetch(`http://${location.host}/write?path=${floder1.value.trim() + file1.value.trim()}&cont=${phase.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `Written!  ${new Date().toLocaleString()}\n`;
+                })
+        });
+        clear.addEventListener('click', () => {
+            output.innerText = '';
+        })
+
+        compare.addEventListener('click', () => {
+            fetch(`http://${location.host}/compare?path1=${floder1.value.trim() + file1.value.trim()}&path2=${floder2.value.trim() + file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `${data}  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        send.addEventListener('click', () => {
+            fetch(`http://${location.host}/send?path1=${floder1.value}&file1=${file1.value}&path2=${floder2.value}&file2=${file2.value}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `Send  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        grsa.addEventListener('click', () => {
+            fetch(`http://${location.host}/generate?path1=${floder1.value.trim() + file1.value.trim()}&path2=${floder2.value.trim() + file2.value.trim()}&tokenp=${phase.value}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `Generated!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        encrypt.addEventListener('click', () => {
+            fetch(`http://${location.host}/rsa-encrypt?floder1=${floder1.value.trim()}&file1=${file1.value.trim()}&floder2=${floder2.value.trim()}&file2=${file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `rsa-encrypted!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        decrypt.addEventListener('click', () => {
+            fetch(`http://${location.host}/rsa-decrypt?floder1=${floder1.value.trim()}&file1=${file1.value.trim()}&floder2=${floder2.value.trim()}&file2=${file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `rsa-decrypted!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        aes_e.addEventListener('click', () => {
+            fetch(`http://${location.host}/aes-e?floder1=${floder1.value.trim()}&file1=${file1.value.trim()}&floder2=${floder2.value.trim()}&file2=${file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `aes-encrypted!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        aes_d.addEventListener('click', () => {
+            fetch(`http://${location.host}/aes-d?floder1=${floder1.value.trim()}&file1=${file1.value.trim()}&floder2=${floder2.value.trim()}&file2=${file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `aes-decrypted!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+
+
+        /* sign.addEventListener('click', () => {
+            fetch(`http://${location.host}/sign?floder1=${floder1.value.trim()}&file1=${file1.value.trim()}&floder2=${floder2.value.trim()}&file2=${file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `signed!  ${new Date().toLocaleString()}\n`;
+                })
+        }) */
+        sign.addEventListener('click', () => {
+            fetch(`http://${location.host}/sign?floder=${floder1.value.trim()}&file1=${file1.value.trim()}&file2=${file2.value.trim()}&tokenp=${phase.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `Signd!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+
+        /* verify.addEventListener('click', () => {
+            fetch(`http://${location.host}/verify?floder1=${floder1.value.trim()}&file1=${file1.value.trim()}&floder2=${floder2.value.trim()}&file2=${file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `${data}  ${new Date().toLocaleString()}\n`;
+                })
+        }) */
+        verify.addEventListener('click', () => {
+            fetch(`http://${location.host}/verify?floder=${floder1.value.trim()}&file1=${file1.value.trim()}&file2=${file2.value.trim()}&tokenp=${phase.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `${data}  ${new Date().toLocaleString()}\n`;
+                })
+        })
+
+        hash.addEventListener('click', () => {
+            fetch(`http://${location.host}/hash?path1=${floder1.value.trim() + file1.value.trim()}&path2=${floder2.value.trim() + file2.value.trim()}`)
+                .then((res) => res.text())
+                .then((data) => {
+                    output.innerText += `Hash-value generated!  ${new Date().toLocaleString()}\n`;
+                })
+        })
+    </script>
+</body>
+
+</html>

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # This is a lab via JavaScript
+=======
+# Here is a repository using JavaScript
+>>>>>>> 7976ba3c29a4a5ece6b1ad217aae484c894666d5
 
 ## demo1
 A:
@@ -102,7 +106,7 @@ floder,
 sk, mac1
 tokenp
 
-verify;
+verify:
     hash:
     enmes, mac2
 floder,

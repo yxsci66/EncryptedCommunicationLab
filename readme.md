@@ -1,3 +1,5 @@
+# This is a lab via JavaScript
+
 ## demo1
 A:
 m * hash => Mac1
@@ -53,7 +55,7 @@ DES(E) => m
 Hash(m) => Mac2
 Kpa(Sign) => MAC
 
-## parameters
+## parameters introduction
 
 generate:
 sk, pk, tokenpath
@@ -106,3 +108,4 @@ verify;
 floder,
 pk, mac2
 sign
+

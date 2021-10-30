@@ -1,3 +1,5 @@
+# Here is a repository using JavaScript
+
 ## demo1
 A:
 m * hash => Mac1
@@ -53,7 +55,7 @@ DES(E) => m
 Hash(m) => Mac2
 Kpa(Sign) => MAC
 
-## parameters
+## parameters introduction
 
 generate:
 sk, pk, tokenpath
@@ -100,7 +102,7 @@ floder,
 sk, mac1
 tokenp
 
-verify;
+verify:
     hash:
     enmes, mac2
 floder,
